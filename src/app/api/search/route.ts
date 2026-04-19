@@ -79,7 +79,12 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await res.json();
-    return NextResponse.json(data);
+    const text = data?.result?.content?.[0]?.text;
+    if (!text) {
+      return NextResponse.json({ offers: [] });
+    }
+    const parsed = JSON.parse(text);
+    return NextResponse.json(parsed);
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json({ error: message }, { status: 500 });

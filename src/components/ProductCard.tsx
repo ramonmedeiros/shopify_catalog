@@ -6,25 +6,20 @@ interface Props {
 }
 
 export default function ProductCard({ product }: Props) {
-  const image = product.images?.[0];
-  const price = product.price_range ?? product.variants?.[0];
-  const priceLabel = product.price_range
-    ? `${product.price_range.currency_code} ${product.price_range.min}${
-        product.price_range.min !== product.price_range.max
-          ? ` – ${product.price_range.max}`
-          : ""
-      }`
-    : product.variants?.[0]
-    ? `${product.variants[0].currency_code} ${product.variants[0].price}`
+  const image = product.media?.[0];
+  const { priceRange } = product;
+  const priceLabel = priceRange
+    ? (() => {
+        const fmt = (a: number) => (a / 100).toFixed(2);
+        const min = fmt(priceRange.min.amount);
+        const max = fmt(priceRange.max.amount);
+        return `${priceRange.min.currency} $${min}${min !== max ? ` – $${max}` : ""}`;
+      })()
     : null;
-
-  const shopUrl = product.shop?.domain
-    ? `https://${product.shop.domain}/products/${product.handle}`
-    : undefined;
 
   return (
     <a
-      href={shopUrl}
+      href={product.lookupUrl}
       target="_blank"
       rel="noopener noreferrer"
       className="group flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-shadow"
@@ -33,7 +28,7 @@ export default function ProductCard({ product }: Props) {
         {image?.url ? (
           <Image
             src={image.url}
-            alt={image.alt ?? product.title}
+            alt={image.altText ?? product.title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -50,10 +45,6 @@ export default function ProductCard({ product }: Props) {
           {product.title}
         </h2>
 
-        {product.shop?.name && (
-          <p className="text-xs text-gray-500 dark:text-gray-400">{product.shop.name}</p>
-        )}
-
         {product.description && (
           <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-1">
             {product.description}
@@ -68,7 +59,7 @@ export default function ProductCard({ product }: Props) {
           )}
           {product.rating && (
             <span className="text-xs text-gray-400">
-              ★ {product.rating.value.toFixed(1)} ({product.rating.count})
+              ★ {product.rating.rating.toFixed(1)} ({product.rating.count})
             </span>
           )}
         </div>

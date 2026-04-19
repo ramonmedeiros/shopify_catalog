@@ -1,35 +1,33 @@
-export interface ProductImage {
+export interface ProductMedia {
   url: string;
-  alt?: string;
+  altText?: string;
 }
 
 export interface ProductVariant {
   id: string;
-  title: string;
-  price: string;
-  currency_code: string;
-  available: boolean;
-  options?: Record<string, string>;
+  displayName?: string;
+  availableForSale?: boolean;
+  price?: {
+    amount: number;
+    currency: string;
+  };
+  media?: ProductMedia[];
 }
 
 export interface Product {
   id: string;
   title: string;
   description?: string;
-  handle?: string;
-  images?: ProductImage[];
-  variants?: ProductVariant[];
-  shop?: {
-    name: string;
-    domain: string;
+  uniqueSellingPoint?: string;
+  media?: ProductMedia[];
+  priceRange?: {
+    min: { amount: number; currency: string };
+    max: { amount: number; currency: string };
   };
   rating?: {
-    value: number;
+    rating: number;
     count: number;
   };
-  price_range?: {
-    min: string;
-    max: string;
-    currency_code: string;
-  };
+  variants?: ProductVariant[];
+  lookupUrl?: string;
 }

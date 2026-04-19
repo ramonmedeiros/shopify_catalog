@@ -25,10 +25,7 @@ export default function Home() {
         throw new Error(json.error ?? "Search failed");
       }
 
-      const products: Product[] =
-        json.result?.content?.[0]
-          ? JSON.parse(json.result.content[0].text).products ?? []
-          : [];
+      const products: Product[] = json.products ?? json.offers ?? [];
 
       setResults(products);
     } catch (err) {
