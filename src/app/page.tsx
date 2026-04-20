@@ -11,14 +11,16 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
 
-  const handleSearch = useCallback(async (query: string) => {
+  const handleSearch = useCallback(async (query: string, shopIds: string[]) => {
     if (!query.trim()) return;
     setLoading(true);
     setError(null);
     setSearched(true);
 
     try {
-      const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+      const params = new URLSearchParams({ q: query });
+      shopIds.forEach((id) => params.append("shop_id", id));
+      const res = await fetch(`/api/search?${params.toString()}`);
       const json = await res.json();
 
       if (!res.ok) {

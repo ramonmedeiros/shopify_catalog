@@ -46,8 +46,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Missing query parameter q" }, { status: 400 });
   }
 
+  const shopIds = req.nextUrl.searchParams.getAll("shop_id").filter(Boolean);
+
   try {
     const token = await getAccessToken();
+
+    const searchArgs: Record<string, unknown> = {
+      query: query,
+      context: 'customer looking for products',
+    };
+    if (shopIds.length > 0) {
+      searchArgs.shop_ids = shopIds;
+    }
 
     const body = {
       jsonrpc: "2.0",
@@ -55,10 +65,7 @@ export async function GET(req: NextRequest) {
       method: "tools/call",
       params: {
         name: "search_global_products",
-        arguments: {
-          query: query,
-          context: 'customer looking for products',
-        }
+        arguments: searchArgs,
       },
     };
 
